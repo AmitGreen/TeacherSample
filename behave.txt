@@ -1,0 +1,490 @@
+Feature: Cannot create two courses with the same name
+
+  Scenario: two teachers both try to teach a math course
+    Given <Alice> is teaching a <Math> course ... passed in 0.000s
+    When <Bob> attempts to also teach a <Math> course ... passed in 0.000s
+    Then an error is thrown ... passed in 0.000s
+
+Feature: Numbers can be used to uniquely identifer courses, students, and teachers
+
+  Scenario: Unique person numbers
+      Created: Person [0]: <Teacher 'Alice' #1>
+      Created: Person [1]: <Teacher 'Bob' #2>
+      Created: Person [2]: <Student 'Charlie' #3>
+      Created: Person [3]: <Student 'David' #4>
+    Given a unique set of students and teachers ... passed in 0.000s
+      | type    | name    | number |
+      | Teacher | Alice   | 1      |
+      | Teacher | Bob     | 2      |
+      | Student | Charlie | 3      |
+      | Student | David   | 4      |
+
+    When other students or teachers attempt to use the same number ... passed in 0.001s
+      | type    | name  | number |
+      | Teacher | Eve   | 1      |
+      | Student | Fred  | 2      |
+      | Teacher | Gail  | 3      |
+      | Student | Harry | 4      |
+    Then <4> errors are thrown ... passed in 0.000s
+
+  Scenario: Invalid person type
+      Created: Person [0]: <Student 'Alice' #1>
+      Created: Person [1]: <Teacher 'Bob' #2>
+    Given a set of people that includes a <Cook> instead of all students and teachers ... passed in 0.000s
+      | type    | name    | number |
+      | Student | Alice   | 1      |
+      | Teacher | Bob     | 2      |
+      | Cook    | Charlie | 3      |
+      | Janitor | David   | 4      |
+    Then an error is thrown ... passed in 0.000s
+
+  Scenario: A course can share the same unique number with a student or teacher
+      Created: Person [0]: <Teacher 'Alice' #1>
+      Created: Person [1]: <Student 'Bob' #2>
+      Created: Person [2]: <Student 'Charlie' #3>
+      Created: Person [3]: <Student 'David' #4>
+      Created: Person [4]: <Teacher 'Eve' #5>
+    Given a unique set of students and teachers ... passed in 0.000s
+      | type    | name    | number |
+      | Teacher | Alice   | 1      |
+      | Student | Bob     | 2      |
+      | Student | Charlie | 3      |
+      | Student | David   | 4      |
+      | Teacher | Eve     | 5      |
+
+      Created: Course [0]: <Course 'Math' #1 <Teacher 'Alice' #1>>
+      Created: Course [1]: <Course 'Geography' #2 <Teacher 'Alice' #1>>
+      Created: Course [2]: <Course 'Jogging' #3 <Teacher 'Eve' #5>>
+      Created: Course [3]: <Course 'Jumping' #4 <Teacher 'Eve' #5>>
+      Created: Course [4]: <Course 'Swimming' #5 <Teacher 'Eve' #5>>
+    Then a unique set of courses can be created, using the same numbers assigned to the students or teacher ... passed in 0.000s
+      | type   | name      | number | parent |
+      | Course | Math      | 1      | Alice  |
+      | Course | Geography | 2      | Alice  |
+      | Course | Jogging   | 3      | Eve    |
+      | Course | Jumping   | 4      | Eve    |
+      | Course | Swimming  | 5      | Eve    |
+
+Feature: A complete Semester
+
+  Scenario: Alice's Math class
+
+...   Created [0]: <Teacher 'Alice' #1>
+...   Created [1]: <Student 'Bob' #2>
+...   Created [2]: <Student 'Charlie' #3>
+...   Created [3]: <Student 'David' #4>
+...   Created [4]: <Teacher 'Eve' #5>
+...   Created [5]: <Course 'Math' #1 <Teacher 'Alice' #1>>
+...   Created [6]: <Quiz 'Math' 'Simple' #1.1>
+...   Created [7]: <Question 'Math' 'Simple' #1.1.1 'What is 1+1?'>
+...   Created [8]: <Choice 'Math' 'Simple' #1.1.1A incorrect 'One'>
+...   Created [9]: <Choice 'Math' 'Simple' #1.1.1B correct 'Two'>
+...   Created [10]: <Choice 'Math' 'Simple' #1.1.1C incorrect 'Three'>
+...   Created [11]: <Question 'Math' 'Simple' #1.1.2 'What is 2-2?'>
+...   Created [12]: <Choice 'Math' 'Simple' #1.1.2A correct 'Zero'>
+...   Created [13]: <Choice 'Math' 'Simple' #1.1.2B incorrect 'One'>
+...   Created [14]: <Choice 'Math' 'Simple' #1.1.2C incorrect 'Two'>
+...   Created [15]: <Question 'Math' 'Simple' #1.1.3 'What is 3 multiplied by 3?'>
+...   Created [16]: <Choice 'Math' 'Simple' #1.1.3A incorrect 'Zero'>
+...   Created [17]: <Choice 'Math' 'Simple' #1.1.3B incorrect 'Three'>
+...   Created [18]: <Choice 'Math' 'Simple' #1.1.3C incorrect 'Six'>
+...   Created [19]: <Choice 'Math' 'Simple' #1.1.3D correct 'Nine'>
+...   Created [20]: <Question 'Math' 'Simple' #1.1.4 'What is 4 modulus 4?'>
+...   Created [21]: <Choice 'Math' 'Simple' #1.1.4A correct 'Zero'>
+...   Created [22]: <Choice 'Math' 'Simple' #1.1.4B incorrect 'One'>
+...   Created [23]: <Choice 'Math' 'Simple' #1.1.4C incorrect 'Four'>
+
+    Given a unique set of choices, courses, quizes, students and teachers ... passed in 0.001s
+      | type     | name    | number | parent | correct | text                       |
+      | Teacher  | Alice   | 1      | .      | .       | .                          |
+      | Student  | Bob     | 2      | .      | .       | .                          |
+      | Student  | Charlie | 3      | .      | .       | .                          |
+      | Student  | David   | 4      | .      | .       | .                          |
+      | Teacher  | Eve     | 5      | .      | .       | .                          |
+      | Course   | Math    | 1      | Alice  | .       | .                          |
+      | Quiz     | Simple  | 1.1    | Math   | .       | .                          |
+      | Question | .       | 1.1.1  | .      | .       | What is 1+1?               |
+      | Choice   | .       | 1.1.1A | .      | No      | One                        |
+      | Choice   | .       | 1.1.1B | .      | Yes     | Two                        |
+      | Choice   | .       | 1.1.1C | .      | No      | Three                      |
+      | Question | .       | 1.1.2  | .      | .       | What is 2-2?               |
+      | Choice   | .       | 1.1.2A | .      | Yes     | Zero                       |
+      | Choice   | .       | 1.1.2B | .      | No      | One                        |
+      | Choice   | .       | 1.1.2C | .      | No      | Two                        |
+      | Question | .       | 1.1.3  | .      | .       | What is 3 multiplied by 3? |
+      | Choice   | .       | 1.1.3A | .      | No      | Zero                       |
+      | Choice   | .       | 1.1.3B | .      | No      | Three                      |
+      | Choice   | .       | 1.1.3C | .      | No      | Six                        |
+      | Choice   | .       | 1.1.3D | .      | Yes     | Nine                       |
+      | Question | .       | 1.1.4  | .      | .       | What is 4 modulus 4?       |
+      | Choice   | .       | 1.1.4A | .      | Yes     | Zero                       |
+      | Choice   | .       | 1.1.4B | .      | No      | One                        |
+      | Choice   | .       | 1.1.4C | .      | No      | Four                       |
+
+...   <Student 'Bob' #2> joined <Course 'Math' #1 <Teacher 'Alice' #1>>
+...   <Student 'Charlie' #3> joined <Course 'Math' #1 <Teacher 'Alice' #1>>
+...   <Student 'David' #4> joined <Course 'Math' #1 <Teacher 'Alice' #1>>
+
+    When students join courses ... passed in 0.000s
+      | student | course |
+      | Bob     | Math   |
+      | Charlie | Math   |
+      | David   | Math   |
+
+...   <Student 'Bob' #2> learned <TrueFact 'What is 1+1?' 'Two'>
+
+    And students learn facts ... passed in 0.000s
+      | student | correct | question_text | choice_text |
+      | Bob     | Yes     | What is 1+1?  | Two         |
+
+...   <Student 'Bob' #2> learned <FalseFact 'What is 3 multiplied by 3?' 'Six'>
+...   <Student 'Bob' #2> learned <TrueFact 'What is 2-2?' 'Zero'>
+
+    And students learn more facts ... passed in 0.000s
+      | student | correct | question_text              | choice_text |
+      | Bob     | No      | What is 3 multiplied by 3? | Six         |
+      | Bob     | Yes     | What is 2-2?               | Zero        |
+
+...  <Teacher 'Alice' #1> gave quiz <Quiz 'Math' 'Simple' #1.1> to all students
+  ...   in course <Course 'Math' #1 <Teacher 'Alice' #1>>
+
+    And teachers gives quizzes ... passed in 0.000s
+      | teacher | course | name   | number |
+      | Alice   | Math   | Simple | 1.1    |
+
+...   <Student 'Bob' #2> answered questions
+
+    And students answer questions ... passed in 0.000s
+      | student |
+      | Bob     |
+
+...   <Student 'Bob' #2> got quiz grade 50 on <Quiz 'Math' 'Simple' #1.1>
+  ...   in course <Course 'Math' #1 <Teacher 'Alice' #1>>
+
+    Then students get their quiz grades ... passed in 0.000s
+      | student | course | name   | number | grade |
+      | Bob     | Math   | Simple | 1.1    | 50    |
+
+...   Created [0]: <Quiz 'Math' 'Final' #1.2>
+...   Created [1]: <Question 'Math' 'Final' #1.2.1 'What is 4 modulus 4?'>
+...   Created [2]: <Choice 'Math' 'Final' #1.2.1A correct 'Zero'>
+...   Created [3]: <Choice 'Math' 'Final' #1.2.1B incorrect 'Four'>
+...   Created [4]: <Question 'Math' 'Final' #1.2.2 'What is 5 to the 5th power?'>
+...   Created [5]: <Choice 'Math' 'Final' #1.2.2A incorrect 'Five'>
+...   Created [6]: <Choice 'Math' 'Final' #1.2.2B incorrect '25'>
+...   Created [7]: <Choice 'Math' 'Final' #1.2.2C incorrect '125'>
+...   Created [8]: <Choice 'Math' 'Final' #1.2.2D incorrect '625'>
+...   Created [9]: <Choice 'Math' 'Final' #1.2.2E correct '3125'>
+...   Created [10]: <Choice 'Math' 'Final' #1.2.2F incorrect '15625'>
+
+    When teachers create more quizzes ... passed in 0.000s
+      | type     | name  | number | parent | correct | text                        |
+      | Quiz     | Final | 1.2    | Math   | .       | .                           |
+      | Question | .     | 1.2.1  | .      | .       | What is 4 modulus 4?        |
+      | Choice   | .     | 1.2.1A | .      | Yes     | Zero                        |
+      | Choice   | .     | 1.2.1B | .      | No      | Four                        |
+      | Question | .     | 1.2.2  | .      | .       | What is 5 to the 5th power? |
+      | Choice   | .     | 1.2.2A | .      | No      | Five                        |
+      | Choice   | .     | 1.2.2B | .      | No      | 25                          |
+      | Choice   | .     | 1.2.2C | .      | No      | 125                         |
+      | Choice   | .     | 1.2.2D | .      | No      | 625                         |
+      | Choice   | .     | 1.2.2E | .      | Yes     | 3125                        |
+      | Choice   | .     | 1.2.2F | .      | No      | 15625                       |
+
+...  <Teacher 'Alice' #1> gave quiz <Quiz 'Math' 'Final' #1.2> to all students
+  ...   in course <Course 'Math' #1 <Teacher 'Alice' #1>>
+
+    And teachers gives more quizzes ... passed in 0.000s
+      | teacher | course | name  | number |
+      | Alice   | Math   | Final | 1.2    |
+
+...   <Student 'Bob' #2> learned <TrueFact 'What is 4 modulus 4?' 'Zero'>
+...   <Student 'Bob' #2> learned <TrueFact 'What is 5 to the 5th power?' '3125'>
+
+    And students learn more facts, including facts on PREVIOUS tests ... passed in 0.000s
+      | student | correct | question_text               | choice_text |
+      | Bob     | Yes     | What is 4 modulus 4?        | Zero        |
+      | Bob     | Yes     | What is 5 to the 5th power? | 3125        |
+
+...   <Student 'Bob' #2> answered questions
+
+    And students answer questions ... passed in 0.000s
+      | student |
+      | Bob     |
+
+...   <Student 'Bob' #2> got quiz grade 75 on <Quiz 'Math' 'Simple' #1.1>
+  ...   in course <Course 'Math' #1 <Teacher 'Alice' #1>>
+...   <Student 'Bob' #2> got quiz grade 100 on <Quiz 'Math' 'Final' #1.2>
+  ...   in course <Course 'Math' #1 <Teacher 'Alice' #1>>
+
+    Then students get their quiz grades, including IMPROVED grades on previous quizzes ... passed in 0.000s
+      | student | course | name   | number | grade |
+      | Bob     | Math   | Simple | 1.1    | 75    |
+      | Bob     | Math   | Final  | 1.2    | 100   |
+
+...   <Student 'Bob' #2> got course grade 88 on <Course 'Math' #1 <Teacher 'Alice' #1>>
+
+    And students get their course grades ... passed in 0.000s
+      | student | course | grade |
+      | Bob     | Math   | 88    |
+
+...   Created [0]: <Course 'Geography' #2 <Teacher 'Alice' #1>>
+...   Created [1]: <Quiz 'Geography' 'Simple' #2.1>
+...   Created [2]: <Question 'Geography' 'Simple' #2.1.1 'How many states are in the United States?'>
+...   Created [3]: <Choice 'Geography' 'Simple' #2.1.1A incorrect '13'>
+...   Created [4]: <Choice 'Geography' 'Simple' #2.1.1B correct '50'>
+...   Created [5]: <Choice 'Geography' 'Simple' #2.1.1C incorrect '51'>
+...   Created [6]: <Quiz 'Geography' 'Final' #2.2>
+...   Created [7]: <Question 'Geography' 'Final' #2.2.1 'What is the capital of New York?'>
+...   Created [8]: <Choice 'Geography' 'Final' #2.2.1A correct 'New York'>
+...   Created [9]: <Choice 'Geography' 'Final' #2.2.1B incorrect 'Madison'>
+...   Created [10]: <Question 'Geography' 'Final' #2.2.2 'What is the capital of the United States?'>
+...   Created [11]: <Choice 'Geography' 'Final' #2.2.2A incorrect 'New York'>
+...   Created [12]: <Choice 'Geography' 'Final' #2.2.2B incorrect 'Olympia'>
+...   Created [13]: <Choice 'Geography' 'Final' #2.2.2C correct 'Washington, D.C.'>
+...   Created [14]: <Question 'Geography' 'Final' #2.2.3 'What is the capital of Washington?'>
+...   Created [15]: <Choice 'Geography' 'Final' #2.2.3A incorrect 'Madison'>
+...   Created [16]: <Choice 'Geography' 'Final' #2.2.3B incorrect 'New York'>
+...   Created [17]: <Choice 'Geography' 'Final' #2.2.3C correct 'Olympia'>
+...   Created [18]: <Choice 'Geography' 'Final' #2.2.3D incorrect 'Washington, D.C.'>
+...   Created [19]: <Course 'Jogging' #3 <Teacher 'Eve' #5>>
+...   Created [20]: <Course 'Jumping' #4 <Teacher 'Eve' #5>>
+...   Created [21]: <Quiz 'Jumping' 'Empty' #4.1>
+...   Created [22]: <Course 'Swimming' #5 <Teacher 'Eve' #5>>
+...   Created [23]: <Quiz 'Swimming' 'Easy' #5.1>
+...   Created [24]: <Question 'Swimming' 'Easy' #5.1.1 'Do we use chlorine in our swimming pool?'>
+...   Created [25]: <Choice 'Swimming' 'Easy' #5.1.1A correct 'Yes'>
+...   Created [26]: <Choice 'Swimming' 'Easy' #5.1.1B incorrect 'No'>
+
+    When teachers create more courses and quizzes ... passed in 0.001s
+      | type     | name      | number | parent    | correct | text                                      |
+      | Course   | Geography | 2      | Alice     | .       | .                                         |
+      | Quiz     | Simple    | 2.1    | Geography | .       | .                                         |
+      | Question | .         | 2.1.1  | .         | .       | How many states are in the United States? |
+      | Choice   | .         | 2.1.1A | .         | No      | 13                                        |
+      | Choice   | .         | 2.1.1B | .         | Yes     | 50                                        |
+      | Choice   | .         | 2.1.1C | .         | No      | 51                                        |
+      | Quiz     | Final     | 2.2    | Geography | .       | .                                         |
+      | Question | .         | 2.2.1  | .         | .       | What is the capital of New York?          |
+      | Choice   | .         | 2.2.1A | .         | Yes     | New York                                  |
+      | Choice   | .         | 2.2.1B | .         | No      | Madison                                   |
+      | Question | .         | 2.2.2  | .         | .       | What is the capital of the United States? |
+      | Choice   | .         | 2.2.2A | .         | No      | New York                                  |
+      | Choice   | .         | 2.2.2B | .         | No      | Olympia                                   |
+      | Choice   | .         | 2.2.2C | .         | Yes     | Washington, D.C.                          |
+      | Question | .         | 2.2.3  | .         | .       | What is the capital of Washington?        |
+      | Choice   | .         | 2.2.3A | .         | No      | Madison                                   |
+      | Choice   | .         | 2.2.3B | .         | No      | New York                                  |
+      | Choice   | .         | 2.2.3C | .         | Yes     | Olympia                                   |
+      | Choice   | .         | 2.2.3D | .         | No      | Washington, D.C.                          |
+      | Course   | Jogging   | 3      | Eve       | .       | .                                         |
+      | Course   | Jumping   | 4      | Eve       | .       | .                                         |
+      | Quiz     | Empty     | 4.1    | Jumping   | .       | .                                         |
+      | Course   | Swimming  | 5      | Eve       | .       | .                                         |
+      | Quiz     | Easy      | 5.1    | Swimming  | .       | .                                         |
+      | Question | .         | 5.1.1  | .         | .       | Do we use chlorine in our swimming pool?  |
+      | Choice   | .         | 5.1.1A | .         | Yes     | Yes                                       |
+      | Choice   | .         | 5.1.1B | .         | No      | No                                        |
+
+...   <Student 'Bob' #2> joined <Course 'Geography' #2 <Teacher 'Alice' #1>>
+...   <Student 'Bob' #2> joined <Course 'Jogging' #3 <Teacher 'Eve' #5>>
+...   <Student 'Bob' #2> joined <Course 'Jumping' #4 <Teacher 'Eve' #5>>
+...   <Student 'Bob' #2> joined <Course 'Swimming' #5 <Teacher 'Eve' #5>>
+...   <Student 'Charlie' #3> joined <Course 'Geography' #2 <Teacher 'Alice' #1>>
+
+    And students join courses ... passed in 0.000s
+      | student | course    |
+      | Bob     | Geography |
+      | Bob     | Jogging   |
+      | Bob     | Jumping   |
+      | Bob     | Swimming  |
+      | Charlie | Geography |
+
+...   <Student 'Bob' #2> learned <FalseFact 'How many states are in the United States?' '51'>
+...   <Student 'Bob' #2> learned <TrueFact 'What is the capital of New York?' 'New York'>
+...   <Student 'Bob' #2> learned <TrueFact 'What is the capital of the United States?' 'Washington, D.C.'>
+...   <Student 'Bob' #2> learned <TrueFact 'What is the capital of Washington?' 'Olympia'>
+...   <Student 'Bob' #2> learned <TrueFact 'Do we use chlorine in our swimming pool?' 'Yes'>
+
+    And students learn facts ... passed in 0.000s
+      | student | correct | question_text                             | choice_text      |
+      | Bob     | No      | How many states are in the United States? | 51               |
+      | Bob     | Yes     | What is the capital of New York?          | New York         |
+      | Bob     | Yes     | What is the capital of the United States? | Washington, D.C. |
+      | Bob     | Yes     | What is the capital of Washington?        | Olympia          |
+      | Bob     | Yes     | Do we use chlorine in our swimming pool?  | Yes              |
+
+...  <Teacher 'Alice' #1> gave quiz <Quiz 'Geography' 'Simple' #2.1> to all students
+  ...   in course <Course 'Geography' #2 <Teacher 'Alice' #1>>
+...  <Teacher 'Alice' #1> gave quiz <Quiz 'Geography' 'Final' #2.2> to all students
+  ...   in course <Course 'Geography' #2 <Teacher 'Alice' #1>>
+...  <Teacher 'Eve' #5> gave quiz <Quiz 'Jumping' 'Empty' #4.1> to all students
+  ...   in course <Course 'Jumping' #4 <Teacher 'Eve' #5>>
+...  <Teacher 'Eve' #5> gave quiz <Quiz 'Swimming' 'Easy' #5.1> to all students
+  ...   in course <Course 'Swimming' #5 <Teacher 'Eve' #5>>
+
+    And teachers gives quizzes ... passed in 0.000s
+      | teacher | course    | name   | number |
+      | Alice   | Geography | Simple | 2.1    |
+      | Alice   | Geography | Final  | 2.2    |
+      | Eve     | Jumping   | Empty  | 4.1    |
+      | Eve     | Swimming  | Easy   | 5.1    |
+
+...   <Student 'Bob' #2> answered questions
+
+    And students answer questions ... passed in 0.000s
+      | student |
+      | Bob     |
+
+...   <Student 'Bob' #2> got quiz grade 75 on <Quiz 'Math' 'Simple' #1.1>
+  ...   in course <Course 'Math' #1 <Teacher 'Alice' #1>>
+...   <Student 'Bob' #2> got quiz grade 100 on <Quiz 'Math' 'Final' #1.2>
+  ...   in course <Course 'Math' #1 <Teacher 'Alice' #1>>
+...   <Student 'Bob' #2> got quiz grade 0 on <Quiz 'Geography' 'Simple' #2.1>
+  ...   in course <Course 'Geography' #2 <Teacher 'Alice' #1>>
+...   <Student 'Bob' #2> got quiz grade 100 on <Quiz 'Geography' 'Final' #2.2>
+  ...   in course <Course 'Geography' #2 <Teacher 'Alice' #1>>
+...   <Student 'Bob' #2> got quiz grade 100 on <Quiz 'Jumping' 'Empty' #4.1>
+  ...   in course <Course 'Jumping' #4 <Teacher 'Eve' #5>>
+...   <Student 'Bob' #2> got quiz grade 100 on <Quiz 'Swimming' 'Easy' #5.1>
+  ...   in course <Course 'Swimming' #5 <Teacher 'Eve' #5>>
+
+    Then students get their quiz grades ... passed in 0.000s
+      | student | course    | name   | number | grade |
+      | Bob     | Math      | Simple | 1.1    | 75    |
+      | Bob     | Math      | Final  | 1.2    | 100   |
+      | Bob     | Geography | Simple | 2.1    | 0     |
+      | Bob     | Geography | Final  | 2.2    | 100   |
+      | Bob     | Jumping   | Empty  | 4.1    | 100   |
+      | Bob     | Swimming  | Easy   | 5.1    | 100   |
+
+...   <Student 'Bob' #2> got course grade 50 on <Course 'Geography' #2 <Teacher 'Alice' #1>>
+...   <Student 'Bob' #2> got course grade 88 on <Course 'Math' #1 <Teacher 'Alice' #1>>
+...   <Student 'Bob' #2> got course grade 100 on <Course 'Jogging' #3 <Teacher 'Eve' #5>>
+...   <Student 'Bob' #2> got course grade 100 on <Course 'Jumping' #4 <Teacher 'Eve' #5>>
+...   <Student 'Bob' #2> got course grade 100 on <Course 'Swimming' #5 <Teacher 'Eve' #5>>
+
+    And students get their course grades ... passed in 0.000s
+      | student | course    | grade |
+      | Bob     | Geography | 50    |
+      | Bob     | Math      | 88    |
+      | Bob     | Jogging   | 100   |
+      | Bob     | Jumping   | 100   |
+      | Bob     | Swimming  | 100   |
+
+...   <Student 'Bob' #2> got semester grade 69 from <Teacher 'Alice' #1>
+...   <Student 'Bob' #2> got semester grade 100 from <Teacher 'Eve' #5>
+
+    And students get their semester grades, for a particular teacher ... passed in 0.000s
+      | student | teacher | grade |
+      | Bob     | Alice   | 69    |
+      | Bob     | Eve     | 100   |
+
+...   <Student 'Charlie' #3> learned <TrueFact 'What is 1+1?' 'Two'>
+...   <Student 'Charlie' #3> learned <TrueFact 'What is 2-2?' 'Zero'>
+...   <Student 'Charlie' #3> learned <TrueFact 'What is 3 multiplied by 3?' 'Nine'>
+...   <Student 'Charlie' #3> learned <TrueFact 'What is 4 modulus 4?' 'Zero'>
+...   <Student 'Charlie' #3> learned <TrueFact 'What is 5 to the 5th power?' '3125'>
+...   <Student 'David' #4> learned <TrueFact 'What is 1+1?' 'Two'>
+...   <Student 'David' #4> learned <TrueFact 'What is 2-2?' 'Zero'>
+...   <Student 'David' #4> learned <TrueFact 'What is 3 multiplied by 3?' 'Nine'>
+...   <Student 'David' #4> learned <TrueFact 'What is 4 modulus 4?' 'Zero'>
+...   <Student 'David' #4> learned <TrueFact 'What is 5 to the 5th power?' '3125'>
+...   <Student 'Charlie' #3> learned <FalseFact 'How many states are in the United States?' '51'>
+...   <Student 'Charlie' #3> learned <TrueFact 'What is the capital of New York?' 'New York'>
+...   <Student 'David' #4> learned <TrueFact 'What is the capital of New York?' 'New York'>
+
+    When other students learn facts ... passed in 0.000s
+      | student | correct | question_text                             | choice_text |
+      | Charlie | Yes     | What is 1+1?                              | Two         |
+      | Charlie | Yes     | What is 2-2?                              | Zero        |
+      | Charlie | Yes     | What is 3 multiplied by 3?                | Nine        |
+      | Charlie | Yes     | What is 4 modulus 4?                      | Zero        |
+      | Charlie | Yes     | What is 5 to the 5th power?               | 3125        |
+      | David   | Yes     | What is 1+1?                              | Two         |
+      | David   | Yes     | What is 2-2?                              | Zero        |
+      | David   | Yes     | What is 3 multiplied by 3?                | Nine        |
+      | David   | Yes     | What is 4 modulus 4?                      | Zero        |
+      | David   | Yes     | What is 5 to the 5th power?               | 3125        |
+      | Charlie | No      | How many states are in the United States? | 51          |
+      | Charlie | Yes     | What is the capital of New York?          | New York    |
+      | David   | Yes     | What is the capital of New York?          | New York    |
+
+...   <Student 'Charlie' #3> answered questions
+...   <Student 'David' #4> answered questions
+
+    And students answer questions ... passed in 0.000s
+      | student |
+      | Charlie |
+      | David   |
+
+...   <Student 'Bob' #2> got quiz grade 75 on <Quiz 'Math' 'Simple' #1.1>
+  ...   in course <Course 'Math' #1 <Teacher 'Alice' #1>>
+...   <Student 'Bob' #2> got quiz grade 100 on <Quiz 'Math' 'Final' #1.2>
+  ...   in course <Course 'Math' #1 <Teacher 'Alice' #1>>
+...   <Student 'Bob' #2> got quiz grade 0 on <Quiz 'Geography' 'Simple' #2.1>
+  ...   in course <Course 'Geography' #2 <Teacher 'Alice' #1>>
+...   <Student 'Bob' #2> got quiz grade 100 on <Quiz 'Geography' 'Final' #2.2>
+  ...   in course <Course 'Geography' #2 <Teacher 'Alice' #1>>
+...   <Student 'Charlie' #3> got quiz grade 100 on <Quiz 'Math' 'Simple' #1.1>
+  ...   in course <Course 'Math' #1 <Teacher 'Alice' #1>>
+...   <Student 'Charlie' #3> got quiz grade 100 on <Quiz 'Math' 'Final' #1.2>
+  ...   in course <Course 'Math' #1 <Teacher 'Alice' #1>>
+...   <Student 'David' #4> got quiz grade 100 on <Quiz 'Math' 'Simple' #1.1>
+  ...   in course <Course 'Math' #1 <Teacher 'Alice' #1>>
+...   <Student 'David' #4> got quiz grade 100 on <Quiz 'Math' 'Final' #1.2>
+  ...   in course <Course 'Math' #1 <Teacher 'Alice' #1>>
+...   <Student 'Charlie' #3> got quiz grade 0 on <Quiz 'Geography' 'Simple' #2.1>
+  ...   in course <Course 'Geography' #2 <Teacher 'Alice' #1>>
+...   <Student 'Charlie' #3> got quiz grade 33 on <Quiz 'Geography' 'Final' #2.2>
+  ...   in course <Course 'Geography' #2 <Teacher 'Alice' #1>>
+
+    Then students get their quiz grades ... passed in 0.000s
+      | student | course    | name   | number | grade |
+      | Bob     | Math      | Simple | 1.1    | 75    |
+      | Bob     | Math      | Final  | 1.2    | 100   |
+      | Bob     | Geography | Simple | 2.1    | 0     |
+      | Bob     | Geography | Final  | 2.2    | 100   |
+      | Charlie | Math      | Simple | 1.1    | 100   |
+      | Charlie | Math      | Final  | 1.2    | 100   |
+      | David   | Math      | Simple | 1.1    | 100   |
+      | David   | Math      | Final  | 1.2    | 100   |
+      | Charlie | Geography | Simple | 2.1    | 0     |
+      | Charlie | Geography | Final  | 2.2    | 33    |
+
+...   <Student 'Bob' #2> got course grade 50 on <Course 'Geography' #2 <Teacher 'Alice' #1>>
+...   <Student 'Bob' #2> got course grade 88 on <Course 'Math' #1 <Teacher 'Alice' #1>>
+...   <Student 'Bob' #2> got course grade 100 on <Course 'Jogging' #3 <Teacher 'Eve' #5>>
+...   <Student 'Bob' #2> got course grade 100 on <Course 'Jumping' #4 <Teacher 'Eve' #5>>
+...   <Student 'Bob' #2> got course grade 100 on <Course 'Swimming' #5 <Teacher 'Eve' #5>>
+...   <Student 'Charlie' #3> got course grade 100 on <Course 'Math' #1 <Teacher 'Alice' #1>>
+...   <Student 'Charlie' #3> got course grade 17 on <Course 'Geography' #2 <Teacher 'Alice' #1>>
+...   <Student 'David' #4> got course grade 100 on <Course 'Math' #1 <Teacher 'Alice' #1>>
+
+    And students get their course grades ... passed in 0.000s
+      | student | course    | grade |
+      | Bob     | Geography | 50    |
+      | Bob     | Math      | 88    |
+      | Bob     | Jogging   | 100   |
+      | Bob     | Jumping   | 100   |
+      | Bob     | Swimming  | 100   |
+      | Charlie | Math      | 100   |
+      | Charlie | Geography | 17    |
+      | David   | Math      | 100   |
+
+...   <Student 'Bob' #2> got semester grade 69 from <Teacher 'Alice' #1>
+...   <Student 'Bob' #2> got semester grade 100 from <Teacher 'Eve' #5>
+...   <Student 'Charlie' #3> got semester grade 59 from <Teacher 'Alice' #1>
+...   <Student 'David' #4> got semester grade 100 from <Teacher 'Alice' #1>
+
+    And students get their semester grades, for a particular teacher ... passed in 0.000s
+      | student | teacher | grade |
+      | Bob     | Alice   | 69    |
+      | Bob     | Eve     | 100   |
+      | Charlie | Alice   | 59    |
+      | David   | Alice   | 100   |
+
+3 features passed, 0 failed, 0 skipped
+5 scenarios passed, 0 failed, 0 skipped
+36 steps passed, 0 failed, 0 skipped, 0 undefined
+Took 0m0.009s
